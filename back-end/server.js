@@ -2,7 +2,8 @@ const express = require('express');
 const dotenv = require('dotenv');
 const db = require('./config/db');
 const colors = require('colors');
-const products = require('./data/products');
+const productRoutes = require('./routes/productRoutes');
+const errorMiddlewares = require('./middleware/errorMiddleware');
 
 dotenv.config();
 
@@ -10,14 +11,10 @@ db.connectDB();
 
 const app = express();
 
-app.get('/api/products', (req, res) => {
-  res.json(products);
-});
+app.use('/api/products', productRoutes);
 
-app.get('/api/products/:id', (req, res) => {
-  const product = products.find((el) => el._id === req.params.id);
-  res.json(product);
-});
+app.use(errorMiddlewares.notFound);
+app.use(errorMiddlewares.errorHandler);
 
 const port = process.env.PORT || 5000;
 
